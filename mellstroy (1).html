@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MELLSTROY</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Arial Black', Impact, sans-serif;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Экран 1: Заставка */
+#intro {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: url('https://img.championat.com/s/1350x900/news/big/i/x/bloger-zaplatil-45-mln-rublej-podpischiku-kotoryj-ustanovil-ego-flag-na-vershine-everesta_1716819729799935542.jpg') center/cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  cursor: pointer;
+}
+#intro::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 1;
+}
+#intro h1 {
+  position: relative;
+  z-index: 2;
+  font-size: 80px;
+  font-weight: 900;
+  letter-spacing: 15px;
+  text-shadow: 0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(255,255,255,0.5), 3px 3px 0 #000;
+  animation: pulse 2s ease-in-out infinite;
+}
+#intro p {
+  position: relative;
+  z-index: 2;
+  margin-top: 50px;
+  font-size: 18px;
+  color: rgba(255,255,255,0.7);
+  padding: 15px 35px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50px;
+  animation: blink 1.5s ease-in-out infinite;
+  font-family: Arial, sans-serif;
+  font-weight: normal;
+}
+
+/* Экран 2: Падающие картинки + выбор */
+#falling {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #000;
+  display: none;
+  z-index: 10;
+}
+#container {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+}
+.falling-img {
+  position: absolute;
+  width: 100px; height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.3);
+}
+@keyframes fall {
+  0%   { top: -150px; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { top: calc(100vh + 150px); opacity: 0; }
+}
+.question {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 20;
+  background: rgba(0,0,0,0.9);
+  padding: 50px 70px;
+  border-radius: 25px;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+.question h2 {
+  font-size: 36px;
+  margin-bottom: 40px;
+}
+.buttons {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+button {
+  padding: 18px 50px;
+  font-size: 22px;
+  font-weight: 900;
+  border: 3px solid;
+  border-radius: 15px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-family: 'Arial Black', sans-serif;
+}
+button:hover { transform: scale(1.15); box-shadow: 0 0 40px currentColor; }
+.red    { color: #ff4444; border-color: #ff4444; }
+.red:hover    { background: rgba(255,68,68,0.2); }
+.blue   { color: #44aaff; border-color: #44aaff; }
+.blue:hover   { background: rgba(68,170,255,0.2); }
+.green  { color: #44ff88; border-color: #44ff88; }
+.green:hover  { background: rgba(68,255,136,0.2); }
+.purple { color: #cc44ff; border-color: #cc44ff; }
+.purple:hover { background: rgba(204,68,255,0.2); }
+
+/* Экран 3: ОБУРМАЛДИТЬ */
+#obur {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #000;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+  gap: 40px;
+}
+#obur img {
+  max-width: 400px;
+  max-height: 50vh;
+  border-radius: 20px;
+  border: 3px solid rgba(255,255,255,0.2);
+  box-shadow: 0 0 60px rgba(255,0,100,0.3);
+}
+#obur button {
+  padding: 20px 60px;
+  font-size: 28px;
+  color: #ff3366;
+  border-color: #ff3366;
+  background: rgba(255,51,102,0.1);
+  animation: heartbeat 1.2s ease-in-out infinite;
+}
+#obur button:hover {
+  background: rgba(255,51,102,0.3);
+  box-shadow: 0 0 50px #ff3366;
+}
+
+/* Экран 4: БУРМАЛДА — крутится по горизонтали (rotateY) */
+#burm {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: url('https://img.championat.com/s/1350x900/news/big/i/x/bloger-zaplatil-45-mln-rublej-podpischiku-kotoryj-ustanovil-ego-flag-na-vershine-everesta_1716819729799935542.jpg') center/cover;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 30;
+}
+#burm::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.3);
+  z-index: 1;
+}
+#burm h1 {
+  position: relative;
+  z-index: 2;
+  font-size: 100px;
+  font-weight: 900;
+  letter-spacing: 20px;
+  text-shadow: 0 0 30px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.5);
+  animation: spinY 3s linear infinite;
+}
+@keyframes spinY {
+  0%   { transform: perspective(500px) rotateY(0deg); }
+  100% { transform: perspective(500px) rotateY(360deg); }
+}
+
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+@keyframes blink { 0%,100%{opacity:0.4} 50%{opacity:1} }
+@keyframes heartbeat { 0%,100%{transform:scale(1)} 15%{transform:scale(1.1)} 30%{transform:scale(1)} 45%{transform:scale(1.08)} }
+</style>
+</head>
+<body>
+
+<!-- Экран 1 -->
+<div id="intro" onclick="goToFalling()">
+  <h1>MELLSTROY</h1>
+  <p>Для продолжения нажмите</p>
+</div>
+
+<!-- Экран 2 -->
+<div id="falling">
+  <div id="container"></div>
+  <div class="question">
+    <h2>Как вас зовут?</h2>
+    <div class="buttons">
+      <button class="red"    onclick="choose()">ФАТИМА</button>
+      <button class="blue"   onclick="choose()">ФАТИМА</button>
+      <button class="green"  onclick="choose()">ФАТИМА</button>
+      <button class="purple" onclick="choose()">ФАТИМА</button>
+    </div>
+  </div>
+</div>
+
+<!-- Экран 3: ОБУРМАЛДИТЬ -->
+<div id="obur">
+  <img src="https://yt3.ggpht.com/ytc/AKedOLTBMpnzQ51iiK2KiINQowJlCgUVeOmdKq9sufNi=s900-c-k-c0x00ffffff-no-rj" alt="Mellstroy">
+  <button onclick="goToBurm()">ОБУРМАЛДИТЬ ❤️</button>
+</div>
+
+<!-- Экран 4: БУРМАЛДА -->
+<div id="burm">
+  <h1>БУРМАЛДА</h1>
+</div>
+
+<script>
+const imgUrl = 'https://avatars.mds.yandex.net/i?id=632c355b8d31288fd30a4a6b8b994b10_l-5451357-images-thumbs&n=13';
+
+function goToFalling() {
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('falling').style.display = 'block';
+  startFalling();
+}
+
+function startFalling() {
+  const container = document.getElementById('container');
+  for (let i = 0; i < 15; i++) {
+    setTimeout(() => createImage(container), i * 300);
+  }
+  setInterval(() => createImage(container), 500);
+}
+
+function createImage(container) {
+  const img = document.createElement('img');
+  img.src = imgUrl;
+  img.className = 'falling-img';
+  img.style.left = Math.random() * (window.innerWidth - 140) + 'px';
+  img.style.transform = 'rotate(' + ((Math.random() - 0.5) * 120) + 'deg)';
+  const size = 80 + Math.random() * 80;
+  img.style.width = size + 'px';
+  img.style.height = size + 'px';
+  img.style.animation = 'fall ' + (2.5 + Math.random() * 3.5) + 's linear forwards';
+  container.appendChild(img);
+  setTimeout(() => img.remove(), 6000);
+}
+
+function choose() {
+  document.getElementById('falling').style.display = 'none';
+  document.getElementById('obur').style.display = 'flex';
+}
+
+function goToBurm() {
+  document.getElementById('obur').style.display = 'none';
+  document.getElementById('burm').style.display = 'flex';
+}
+</script>
+
+</body>
+</html>
